@@ -16,7 +16,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-const allowedOrigins = ['http://localhost:8080', 'http://localhost:3000'];
+const allowedOrigins = ['http://localhost:8080', 'http://localhost:3000', 'https://projecteval-backend.onrender.com', 'https://projecteval.onrender.com'];
 
 const corsOptions = {
     origin: (origin, callback) => {
