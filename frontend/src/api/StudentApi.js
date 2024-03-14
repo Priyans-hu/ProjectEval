@@ -24,6 +24,10 @@ class StudentApi {
         return this.studentApi.put(`/${studentId}`, updatedStudentData);
     }
 
+    removeMentor(studentId) {
+        return this.studentApi.put(`/remove/${studentId}`);
+    }
+
     updateEvaluation(studentId, evaluationData) {
         return this.studentApi.put(`/eval/${studentId}`, evaluationData);
     }

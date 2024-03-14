@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-
 import { Formik, Form, Field } from 'formik';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
 import studentApi from '../api/StudentApi';
 import mentorApi from '../api/MentorApi';
 import StudentCard from '../components/StudentCard';
@@ -12,92 +10,98 @@ import StudentCard from '../components/StudentCard';
 const EditSelectedStudentPage = () => {
     const navigate = useNavigate();
     const [students, setStudents] = useState([]);
+    const [alreadyAssignedStudents, setAlreadyAssignedStudents] = useState([]);
     const mentorUserId = localStorage.getItem('mentorUserId');
-    const [selectedCount, setSelectedCount] = useState(0);
+    const [initiallyAssignedStudents, setInitiallyAssignedStudents] = useState([]);
 
     useEffect(() => {
         studentApi.getAllStudents()
-            .then(response => {
-                setStudents(response.data);
-            })
-            .catch(error => {
-                console.error('Error fetching students: ', error);
-            });
-    }, []);
+        .then(response => {
+            setStudents(response.data);
+            const assignedToCurrentMentor = response.data.filter(student => student.mentor === mentorUserId);
+            setAlreadyAssignedStudents(assignedToCurrentMentor);
+            setInitiallyAssignedStudents(assignedToCurrentMentor);
+        })
+        .catch(error => {
+            console.error('Error fetching students: ', error);
+        });
+    }, [mentorUserId]);
 
-    const handleCheckboxChange = (studentId, values, setFieldValue) => {
-        const student = students.find(student => student._id === studentId);
-        
-        if (student.mentor !== null && student.mentor !== mentorUserId) {
-            toast.error('This student is already selected by another mentor.');
-            return;
-        }
-    
-        if (values.selectedStudents.includes(studentId)) {
-            setFieldValue('selectedStudents', values.selectedStudents.filter(id => id !== studentId));
-            setSelectedCount(prevCount => prevCount - 1);
+    const handleCheckboxChange = (studentId) => {
+        const isStudentSelected = alreadyAssignedStudents.some(student => student._id === studentId);
+
+        if (isStudentSelected) {
+            const updatedSelectedStudents = alreadyAssignedStudents.filter(student => student._id !== studentId);
+            setAlreadyAssignedStudents(updatedSelectedStudents);
         } else {
-            if (selectedCount < 4) {
-                setFieldValue('selectedStudents', [...values.selectedStudents, studentId]);
-                setSelectedCount(prevCount => prevCount + 1);
+            if (alreadyAssignedStudents.length < 4) {
+                const selectedStudent = students.find(student => student._id === studentId);
+                setAlreadyAssignedStudents([...alreadyAssignedStudents, selectedStudent]);
             } else {
                 toast.error('You can only select up to 4 students.');
             }
         }
     };
 
-    const handleSubmit = async (values) => {
+    const handleSubmit = async () => {
         try {
-            const mentorId = localStorage.getItem('mentorUserId');
-            const selectedStudents = values.selectedStudents;
+            const selectedStudents = alreadyAssignedStudents.map(student => student._id);
+
+            await mentorApi.updateMentor(mentorUserId, { studentsEvaluated: selectedStudents });
     
-            // Update mentor with selected students
-            await mentorApi.updateMentor(mentorId, { studentsEvaluated: selectedStudents });
-    
-            // Update students with mentorId
-            const promises = selectedStudents.map(studentId => {
-                return studentApi.updateStudent(studentId, { mentor: mentorId });
+            // Using Promise.all to wait for all removals to complete
+            const removalPromises = initiallyAssignedStudents.map(async student => {
+                await studentApi.removeMentor(student._id);
             });
+            await Promise.all(removalPromises);
     
-            // Wait for all student updates to complete
-            await Promise.all(promises);
+            // Using Promise.all to wait for all updates to complete
+            const updatePromises = selectedStudents.map(async studentId => {
+                await studentApi.updateStudent(studentId, { mentor: mentorUserId });
+            });
+            await Promise.all(updatePromises);
     
             toast.success('Students assigned successfully');
             navigate('/home');
         } catch (error) {
-            toast.error('Error assigning students');
+            if (error.response && error.response.status === 403) {
+                toast.error(`Some students are locked`);
+            } else {
+                toast.error('Error assigning students');
+            }
             console.error('Error assigning students: ', error);
         }
     };
 
     return (
         <div className="container mx-auto p-4">
-            <h1 className="text-3xl font-bold my-4 mb-4">Edit Selected Students</h1>
+            <h1 className="text-xl md:text-3xl font-bold mt-4">Edit Selected Students</h1>
+            <p className='text-red-500 text-sm my-4' >Select atleast 3 students and max 4</p>
             <Formik
-                initialValues={{ selectedStudents: [] }}
+                initialValues={{ selectedStudents: alreadyAssignedStudents.map(student => student._id) }}
                 onSubmit={(values) => handleSubmit(values)}
             >
-                {({ values, setFieldValue }) => (
+                {() => (
                     <Form>
-                        <div className='grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8'>
+                        <div className='grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8 text-sm md:text-base'>
                             {students.map(student => (
                                 <div key={student._id} className="flex items-center px-4 bg-gray-200 hover:bg-gray-300 rounded">
                                     <Field
                                         type="checkbox"
                                         name="selectedStudents"
                                         value={student._id}
-                                        checked={values.selectedStudents.includes(student._id)}
-                                        onChange={() => handleCheckboxChange(student._id, values, setFieldValue)}
+                                        checked={alreadyAssignedStudents.some(s => s._id === student._id)}
+                                        onChange={() => handleCheckboxChange(student._id)}
                                         className="mr-2 cursor-pointer"
                                         disabled={student.mentor !== null && student.mentor !== mentorUserId}
                                     />
                                     <label htmlFor={student._id}>
-                                        <StudentCard user={student} controls={false}/>
+                                        <StudentCard user={student} controls={false} />
                                     </label>
                                 </div>
                             ))}
                         </div>
-                        {selectedCount >= 3 && selectedCount <= 4 && (
+                        {alreadyAssignedStudents.length >= 3 && alreadyAssignedStudents.length <= 4 && (
                             <button
                                 type="submit"
                                 className="py-2 px-4 bg-blue-500 text-white rounded-md float-right w-1/4"

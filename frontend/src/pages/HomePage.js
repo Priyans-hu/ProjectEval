@@ -34,8 +34,8 @@ const HomePage = () => {
     const selectedStudents = students.filter(student => student.mentor === mentorUserId);
     const filteredStudents = students.filter(student => {
         if (filter === 'all') return true;
-        if (filter === 'locked') return student.isLocked;
-        if (filter === 'unlocked') return !student.isLocked;
+        if (filter === 'assigned') return student.evaluation.ideation !== null || student.evaluation.execution !== null || student.evaluation.vivaPitch !== null;
+        if (filter === 'pending') return student.evaluation.ideation === null && student.evaluation.execution === null && student.evaluation.vivaPitch === null;
         return false;
     });
 
@@ -51,7 +51,7 @@ const HomePage = () => {
             <div className='my-4'>
                 <div>
                     <div className='flex items-center justify-between my-4'>
-                        <h1 className="text-3xl font-bold">Selected Students</h1>
+                        <h1 className="text-xl md:text-3xl font-bold">Selected Students</h1>
                         <button className='py-2 px-6 bg-blue-400 rounded-xl font-bold' onClick={handleEditClick}>Edit</button>
                     </div>
                     <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -64,8 +64,8 @@ const HomePage = () => {
                 </div>
                 <div>
                     <div className='flex items-center justify-between'>
-                        <h1 className="text-3xl font-bold mt-8 mb-4">All Students</h1>
-                        <div className='flex items-center'>
+                        <h1 className="text-xl md:text-3xl font-bold mt-8 mb-4">All Students</h1>
+                        <div className='text-sm md:text-base flex items-center'>
                             <p className='mr-2'>Filter:</p>
                             <select
                                 className='py-2 px-4 bg-gray-200 rounded'
@@ -73,8 +73,8 @@ const HomePage = () => {
                                 onChange={e => setFilter(e.target.value)}
                             >
                                 <option value="all">All</option>
-                                <option value="locked">Locked</option>
-                                <option value="unlocked">Unlocked</option>
+                                <option value="assigned">Assigned</option>
+                                <option value="pending">Pending</option>
                             </select>
                         </div>
                     </div>

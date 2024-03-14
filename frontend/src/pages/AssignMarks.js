@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import studentApi from '../api/StudentApi';
 import EvalMarksInputField from '../components/EvalMarksInputField';
+import ConfirmationBox from '../components/ConfirmationBox';
 
 const AssignMarks = () => {
     const navigate = useNavigate();
@@ -46,25 +47,37 @@ const AssignMarks = () => {
         vivaPitch: Yup.number().max(10, 'Marks should be less than or equal to 10').nullable()
     });
 
-    const handleLockClick = async () => {
+    const handleSubmitAndLock = async (values) => {
         try {
-            await studentApi.updateStudent(userId, { isLocked: true });
-            toast.success('Student locked successfully');
-            navigate('/home');
-        } catch (error) {
-            if (error.response && error.response.status === 403) {
-                toast.error('Student is already locked');
-            } else {
-                toast.error('Error locking student');
+            if (!values.ideation || !values.execution || !values.vivaPitch) {
+                toast.error('Please fill in all fields before locking the student');
+                return;
             }
-            console.error('Error locking student: ', error);
+    
+            ConfirmationBox({
+                onConfirm: async () => {
+                    try {
+                        await studentApi.updateEvaluation(userId, values);
+                        await studentApi.lockStudent(userId);
+                        toast.success('Student marks updated and locked successfully');
+                        navigate('/home');
+                    } catch (error) {
+                        toast.error('Error updating student marks');
+                        console.error('Error updating student marks: ', error);
+                    }
+                }
+            });
+
+        } catch (error) {
+            toast.error('Error updating student marks or locking student');
+            console.error('Error updating student marks or locking student: ', error);
         }
     };
 
-    const onSubmit = async (values, { setSubmitting }) => {
+    const handleSave = async (values, { setSubmitting }) => {
         try {
             await studentApi.updateEvaluation(userId, values);
-            toast.success('Marks submitted successfully');
+            toast.success('Marks saved successfully');
             navigate('/home');
         } catch (error) {
             if (error.response && error.response.status === 403) {
@@ -79,30 +92,32 @@ const AssignMarks = () => {
 
     return (
         <div className='container md:w-1/2 mx-auto p-4'>
-            <h1 className='text-3xl font-bold mb-4'>Assign Marks for {student.name}</h1>
+            <h1 className='text-xl md:text-3xl font-bold mb-4'>Assign Marks for {student.name}</h1>
             {notAllowed ?
                 <p className='text-sm text-red-500'>You cannot modify this data</p>
                 : null}
             <Formik
                 initialValues={marks}
                 validationSchema={validationSchema}
-                onSubmit={onSubmit}
+                onSubmit={handleSave}
             >
                 <Form className='m-auto space-y-4'>
                     <EvalMarksInputField label={'Ideation'} name={'ideation'} isEditable={notAllowed} />
                     <EvalMarksInputField label={'Execution'} name={'execution'} isEditable={notAllowed} />
                     <EvalMarksInputField label={'Viva'} name={'vivaPitch'} isEditable={notAllowed} />
-                    <button type='button' className='bg-red-500 text-white mr-4 py-2 px-4 rounded-md hover:bg-red-600 hover:cursor-pointer' 
-                            onClick={handleLockClick} 
-                            disabled={notAllowed}
-                        >
-                            Lock
-                        </button>
-                    <button type='submit' className='bg-blue-500 text-white mr-4 py-2 px-4 rounded-md hover:bg-blue-600 hover:cursor-pointer' 
-                        disabled={notAllowed} 
-                        >
-                            Submit
-                        </button>
+                    <button
+                        type='button'
+                        className='bg-blue-500 text-white mr-4 py-2 px-4 rounded-md hover:bg-red-600 hover:cursor-pointer'
+                        onClick={() => handleSubmitAndLock(marks)}
+                        disabled={notAllowed}
+                    >
+                        Submit
+                    </button>
+                    <button type='submit' className='bg-blue-500 text-white mr-4 py-2 px-4 rounded-md hover:bg-blue-800 hover:cursor-pointer'
+                        disabled={notAllowed}
+                    >
+                        Save
+                    </button>
                 </Form>
             </Formik>
         </div>
