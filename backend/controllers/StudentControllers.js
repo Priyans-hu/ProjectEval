@@ -88,7 +88,6 @@ const updateEvaluation = async (req, res) => {
         student.evaluation.vivaPitch = vivaPitch || student.evaluation.vivaPitch;
 
         await student.save();
-        await sendEvaluationEmail(student.email, student.name, student.evaluation);
         res.json(student);
     } catch (err) {
         res.status(400).json({ message: err.message });
@@ -102,10 +101,11 @@ const lockStudent = async (req, res) => {
         if (!student) {
             return res.status(404).json({ message: "Student not found" });
         }
-
+        
         student.isLocked = true;
         await student.save();
-
+        
+        await sendEvaluationEmail(student.email, student.name, student.evaluation);
         res.json({ message: "Student locked successfully" });
     } catch (err) {
         res.status(500).json({ message: err.message });
