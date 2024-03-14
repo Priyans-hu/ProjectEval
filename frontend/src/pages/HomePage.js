@@ -8,6 +8,7 @@ const HomePage = () => {
     const mentorUserId = localStorage.getItem('mentorUserId');
     const [students, setStudents] = useState([]);
     const [mentorName, setMentorName] = useState('');
+    const [filter, setFilter] = useState('all');
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -20,16 +21,23 @@ const HomePage = () => {
             });
     }, []);
 
-    mentorApi.getMentorById(mentorUserId)
-        .then(response => {
-            setMentorName(response.data.name);
-        })
-        .catch(error => {
-            console.error('Error fetching mentor: ', error);
-        });
+    useEffect(() => {
+        mentorApi.getMentorById(mentorUserId)
+            .then(response => {
+                setMentorName(response.data.name);
+            })
+            .catch(error => {
+                console.error('Error fetching mentor: ', error);
+            });
+    }, [mentorUserId]);
 
     const selectedStudents = students.filter(student => student.mentor === mentorUserId);
-    const allStudents = students.filter(student => student.mentor !== mentorUserId);
+    const filteredStudents = students.filter(student => {
+        if (filter === 'all') return true;
+        if (filter === 'locked') return student.isLocked;
+        if (filter === 'unlocked') return !student.isLocked;
+        return false;
+    });
 
     const handleEditClick = () => {
         navigate('/edit', { state: { selectedStudents } });
@@ -46,7 +54,7 @@ const HomePage = () => {
                         <h1 className="text-3xl font-bold">Selected Students</h1>
                         <button className='py-2 px-6 bg-blue-400 rounded-xl font-bold' onClick={handleEditClick}>Edit</button>
                     </div>
-                    <ul className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                    <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         {selectedStudents.map(student => (
                             <li key={student._id} className="bg-gray-200 rounded">
                                 <StudentCard user={student} />
@@ -55,9 +63,23 @@ const HomePage = () => {
                     </ul>
                 </div>
                 <div>
-                    <h1 className="text-3xl font-bold mt-8 mb-4">All Students</h1>
-                    <ul className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-                        {allStudents.map(student => (
+                    <div className='flex items-center justify-between'>
+                        <h1 className="text-3xl font-bold mt-8 mb-4">All Students</h1>
+                        <div className='flex items-center'>
+                            <p className='mr-2'>Filter:</p>
+                            <select
+                                className='py-2 px-4 bg-gray-200 rounded'
+                                value={filter}
+                                onChange={e => setFilter(e.target.value)}
+                            >
+                                <option value="all">All</option>
+                                <option value="locked">Locked</option>
+                                <option value="unlocked">Unlocked</option>
+                            </select>
+                        </div>
+                    </div>
+                    <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {filteredStudents.map(student => (
                             <li key={student._id} className="bg-gray-200 rounded">
                                 <StudentCard user={student} />
                             </li>

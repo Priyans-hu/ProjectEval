@@ -28,6 +28,10 @@ class StudentApi {
         return this.studentApi.put(`/eval/${studentId}`, evaluationData);
     }
 
+    lockStudent(studentId) {
+        return this.studentApi.put(`/lock/${studentId}`);
+    }
+
     deleteStudent(studentId) {
         return this.studentApi.delete(`/${studentId}`);
     }

@@ -43,12 +43,19 @@ const UserSelectionPage = () => {
                         <option key={user._id} value={user._id}>{user.name}</option>
                     ))}
                 </select>
-                <button
-                    className="mt-4 bg-blue-500 text-white px-4 py-2 w-1/3 rounded float-right"
-                    onClick={handleContinue}
-                >
-                    Continue
-                </button>
+                <div className='flex justify-end gap-2'>
+                    <button
+                        className="mt-4 bg-blue-500 text-white px-4 py-2 rounded"
+                    >
+                        Add New Mentor
+                    </button>
+                    <button
+                        className="mt-4 bg-blue-500 text-white px-4 py-2 md:w-1/3 rounded"
+                        onClick={handleContinue}
+                    >
+                        Continue
+                    </button>
+                </div>
             </div>
         </div>
     );

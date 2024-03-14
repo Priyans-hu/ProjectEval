@@ -13,7 +13,7 @@ const StudentCard = ({ user, controls = true }) => {
     const totalMarks = (user.evaluation.ideation + user.evaluation.execution + user.evaluation.vivaPitch);
 
     return (
-        <div className={`flex justify-between items-center p-4`} onClick={controls ? clickHandler : null}>
+        <div className={`flex justify-between items-center p-4 hover:bg-gray-300 hover:cursor-pointer`} onClick={controls ? clickHandler : null}>
             <div>
                 <img
                     src={user.image}
@@ -25,7 +25,7 @@ const StudentCard = ({ user, controls = true }) => {
                 />
                 <p className='inline'>{user.name}</p>
             </div>
-            <div style={{ width: '50px' }}>
+            {controls ? <div style={{ width: '50px' }}>
                 <CircularProgressbar
                     value={totalMarks}
                     maxValue={30}
@@ -37,7 +37,7 @@ const StudentCard = ({ user, controls = true }) => {
                         trailColor: '#d6d6d6',
                     })}
                 />
-            </div>
+            </div> : null}
         </div>
     );
 };
