@@ -1,12 +1,23 @@
-import React from 'react'
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
+import 'react-circular-progressbar/dist/styles.css';
 
-const StudentCard = ({ user }) => {
+const StudentCard = ({ user, controls = true }) => {
+    const navigate = useNavigate();
+    
+    const clickHandler = () => {
+        navigate('/assign/' + user._id);
+    }
+
+    const totalMarks = (user.evaluation.ideation + user.evaluation.execution + user.evaluation.vivaPitch);
+
     return (
-        <div className='flex justify-between items-center'>
+        <div className={`flex justify-between items-center p-4`} onClick={controls ? clickHandler : null}>
             <div>
                 <img
                     src={user.image}
-                    alt=''
+                    alt={user.name}
                     height='50px'
                     width='50px'
                     className='rounded-full object-cover inline mr-4'
@@ -14,8 +25,21 @@ const StudentCard = ({ user }) => {
                 />
                 <p className='inline'>{user.name}</p>
             </div>
+            <div style={{ width: '50px' }}>
+                <CircularProgressbar
+                    value={totalMarks}
+                    maxValue={30}
+                    text={`${totalMarks}`}
+                    styles={buildStyles({
+                        textSize: '30px',
+                        textColor: '#000',
+                        pathColor: 'green',
+                        trailColor: '#d6d6d6',
+                    })}
+                />
+            </div>
         </div>
-    )
-}
+    );
+};
 
-export default StudentCard
+export default StudentCard;

@@ -29,7 +29,7 @@ const UserSelectionPage = () => {
     };
 
     return (
-        <div className="flex flex-col items-center justify-center h-full">
+        <div className="flex flex-col items-center justify-center h-full my-8">
             <h1 className="text-2xl font-bold mb-4">User Selection</h1>
             <div className="p-4 md:w-1/3">
                 <h2 className="text-lg font-bold mb-2">Working As</h2>

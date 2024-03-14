@@ -20,7 +20,7 @@ function App() {
 						<Route path="/" element={<UserSelectionPage />} />
 						<Route path="/home" element={<HomePage />} />
 						<Route path="/edit" element={<EditSelectedStudentPage />} />
-						<Route path="/assign" element={<AssignMarks />} />
+						<Route path="/assign/:userId" element={<AssignMarks />} />
 					</Routes>
 				</div>
 				<Footer />

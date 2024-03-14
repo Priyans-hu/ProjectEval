@@ -24,12 +24,12 @@ class StudentApi {
         return this.studentApi.put(`/${studentId}`, updatedStudentData);
     }
 
-    deleteStudent(studentId) {
-        return this.studentApi.delete(`/${studentId}`);
+    updateEvaluation(studentId, evaluationData) {
+        return this.studentApi.put(`/eval/${studentId}`, evaluationData);
     }
 
-    updateEvaluation(studentId, evaluationData) {
-        return this.studentApi.put(`/${studentId}/evaluation`, evaluationData);
+    deleteStudent(studentId) {
+        return this.studentApi.delete(`/${studentId}`);
     }
 }
 

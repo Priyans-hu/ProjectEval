@@ -64,7 +64,7 @@ const EditSelectedStudentPage = () => {
                                         disabled={student.mentor !== null && student.mentor !== mentorUserId}
                                     />
                                     <label htmlFor={student._id}>
-                                        <StudentCard user={student} />
+                                        <StudentCard user={student} controls={false}/>
                                     </label>
                                 </div>
                             ))}
