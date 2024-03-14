@@ -70,6 +70,27 @@ const updateStudent = async (req, res) => {
     }
 };
 
+// Controller to remove mentor from a student
+const removeMentor = async (req, res) => {
+    try {
+        const student = await Student.findById(req.params.id);
+        if (!student) {
+            return res.status(404).json({ message: "Student not found" });
+        }
+
+        if (student.isLocked) {
+            return res.status(403).json({ message: "Student is locked and cannot be modified" });
+        }
+
+        student.mentor = null;
+
+        const updatedStudent = await student.save();
+        res.json(updatedStudent);
+    } catch (err) {
+        res.status(400).json({ message: err.message });
+    }
+};
+
 // Controller to update student marks/evaluation
 const updateEvaluation = async (req, res) => {
     const { ideation, execution, vivaPitch } = req.body;
@@ -135,6 +156,7 @@ module.exports = {
     createStudent,
     getStudentById,
     updateStudent,
+    removeMentor,
     updateEvaluation,
     lockStudent,
     deleteStudent
