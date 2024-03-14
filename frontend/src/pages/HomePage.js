@@ -18,15 +18,15 @@ const HomePage = () => {
             .catch(error => {
                 console.error('Error fetching students: ', error);
             });
-
-        mentorApi.getMentorById(mentorUserId) // Pass mentorUserId to getMentorById
-            .then(response => {
-                setMentorName(response.data.name); // Assuming response.data contains mentor details
-            })
-            .catch(error => {
-                console.error('Error fetching mentor: ', error);
-            });
     }, []);
+
+    mentorApi.getMentorById(mentorUserId)
+        .then(response => {
+            setMentorName(response.data.name);
+        })
+        .catch(error => {
+            console.error('Error fetching mentor: ', error);
+        });
 
     const selectedStudents = students.filter(student => student.mentor === mentorUserId);
     const allStudents = students.filter(student => student.mentor !== mentorUserId);
