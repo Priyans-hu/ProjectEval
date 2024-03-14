@@ -1,16 +1,24 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-const mentorSchema = new mongoose.Schema({
+const mentorSchema = new Schema({
     name: { type: String, required: true },
     email: { type: String, required: true },
-    studentsEvaluated: { 
-        type: Number,
-        default: 0,
-        min: 0,
-        max: 4
+    studentsEvaluated: {
+        type: [{
+            type: Schema.Types.ObjectId,
+            ref: 'Student'
+        }],
+        default: [],
+        validate: {
+            validator: function(v) {
+                return v.length >= 3 && v.length <= 4;
+            },
+            message: props => `The array must have a length between 3 and 4. Current length is ${props.value.length}.`
+        }
     }
 });
 
-const Mentor = mongoose.model("Mentor", mentorSchema);
+const Mentor = mongoose.model('Mentor', mentorSchema);
 
 module.exports = Mentor;

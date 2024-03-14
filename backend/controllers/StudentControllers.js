@@ -48,24 +48,29 @@ const getStudentById = async (req, res) => {
 const updateStudent = async (req, res) => {
     try {
         const student = await Student.findById(req.params.id);
-        if (student) {
-            student.name = req.body.name || student.name;
-            student.image = req.body.image || student.image;
-            student.email = req.body.email || student.email;
-            student.mentor = req.body.mentor || student.mentor;
-            student.evaluation = req.body.evaluation || student.evaluation;
-            student.isLocked = req.body.isLocked || student.isLocked;
-
-            const updatedStudent = await student.save();
-            res.json(updatedStudent);
-        } else {
-            res.status(404).json({ message: "Student not found" });
+        if (!student) {
+            return res.status(404).json({ message: "Student not found" });
         }
+
+        if (student.isLocked) {
+            return res.status(403).json({ message: "Student is locked and cannot be modified" });
+        }
+
+        student.name = req.body.name || student.name;
+        student.image = req.body.image || student.image;
+        student.email = req.body.email || student.email;
+        student.mentor = req.body.mentor || student.mentor;
+        student.evaluation = req.body.evaluation || student.evaluation;
+        student.isLocked = req.body.isLocked || student.isLocked;
+
+        const updatedStudent = await student.save();
+        res.json(updatedStudent);
     } catch (err) {
         res.status(400).json({ message: err.message });
     }
 };
 
+// Controller to update student marks/evaluation
 const updateEvaluation = async (req, res) => {
     const { ideation, execution, vivaPitch } = req.body;
     try {
@@ -74,15 +79,36 @@ const updateEvaluation = async (req, res) => {
             return res.status(404).json({ message: "Student not found" });
         }
 
+        if (student.isLocked) {
+            return res.status(403).json({ message: "Student is locked and cannot be modified" });
+        }
+
         student.evaluation.ideation = ideation || student.evaluation.ideation;
         student.evaluation.execution = execution || student.evaluation.execution;
         student.evaluation.vivaPitch = vivaPitch || student.evaluation.vivaPitch;
 
         await student.save();
-        await sendEvaluationEmail(student.email, student.evaluation);
+        await sendEvaluationEmail(student.email, student.name, student.evaluation);
         res.json(student);
     } catch (err) {
         res.status(400).json({ message: err.message });
+    }
+};
+
+// Controller to lock a student
+const lockStudent = async (req, res) => {
+    try {
+        const student = await Student.findById(req.params.id);
+        if (!student) {
+            return res.status(404).json({ message: "Student not found" });
+        }
+
+        student.isLocked = true;
+        await student.save();
+
+        res.json({ message: "Student locked successfully" });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
     }
 };
 
@@ -90,6 +116,9 @@ const updateEvaluation = async (req, res) => {
 const deleteStudent = async (req, res) => {
     try {
         const student = await Student.findById(req.params.id);
+        if (student.isLocked) {
+            return res.status(403).json({ message: "Student is locked and cannot be modified" });
+        }
         if (student) {
             await student.remove();
             res.json({ message: "Student deleted" });
@@ -107,5 +136,6 @@ module.exports = {
     getStudentById,
     updateStudent,
     updateEvaluation,
+    lockStudent,
     deleteStudent
 };

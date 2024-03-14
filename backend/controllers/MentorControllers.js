@@ -45,10 +45,7 @@ const updateMentor = async (req, res) => {
     try {
         const mentor = await Mentor.findById(req.params.id);
         if (mentor) {
-            mentor.name = req.body.name || mentor.name;
-            mentor.email = req.body.email || mentor.email;
             mentor.studentsEvaluated = req.body.studentsEvaluated || mentor.studentsEvaluated;
-
             const updatedMentor = await mentor.save();
             res.json(updatedMentor);
         } else {

@@ -9,21 +9,24 @@ const transporter = nodemailer.createTransport({
     },
 })
 
-// host: "smtp.gmail.com",
-// port: 465,
-// secure: true,
-
-const sendEvaluationEmail = async (studentEmail, evaluation) => {
+const sendEvaluationEmail = async (studentEmail, studentName, evaluation) => {
     try {
         let mailOptions = {
             from: process.env.EMAIL_USER,
             to: studentEmail,
             subject: 'Project Evaluation',
-            text: `Your project has been evaluated. 
-                    Ideation: ${evaluation.ideation}, 
-                    Execution: ${evaluation.execution}, 
-                    Viva Pitch: ${evaluation.vivaPitch}. 
-Check your dashboard for detailed feedback.`
+            html: `
+                <p><strong>Dear ${studentName},</strong></p>
+                <p>Your project has been evaluated:</p>
+                <ul>
+                    <li><strong>Ideation:</strong> ${evaluation.ideation}</li>
+                    <li><strong>Execution:</strong> ${evaluation.execution}</li>
+                    <li><strong>Viva Pitch:</strong> ${evaluation.vivaPitch}</li>
+                </ul>
+                <p>Check your dashboard for detailed feedback.</p>
+                <hr>
+                <p><strong>Best regards,</strong><br>Your Mentor</p>
+            `
         };
 
         let info = await transporter.sendMail(mailOptions);
