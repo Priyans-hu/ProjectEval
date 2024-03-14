@@ -1,4 +1,5 @@
 const Student = require("../models/StudentModel");
+const sendEvaluationEmail = require('../utils/SendEvaluationMail');
 
 // Controller to get all students
 const getAllStudents = async (req, res) => {
@@ -78,6 +79,7 @@ const updateEvaluation = async (req, res) => {
         student.evaluation.vivaPitch = vivaPitch || student.evaluation.vivaPitch;
 
         await student.save();
+        await sendEvaluationEmail(student.email, student.evaluation);
         res.json(student);
     } catch (err) {
         res.status(400).json({ message: err.message });
