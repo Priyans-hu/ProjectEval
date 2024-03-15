@@ -90,9 +90,9 @@ const EditSelectedStudentPage = () => {
                 <Loader />
             ) : (
                 <div className="container mx-auto p-4">
-                    <div className='flex justify-between'>
-                        <h1 className="text-xl md:text-3xl font-bold mt-4">Edit Selected Students</h1>
-                        <button>
+                    <div className='flex flex-col sm:flex-row justify-items-end sm:justify-between'>
+                        <h1 className="text-xl md:text-3xl font-bold my-4 md:mt-4">Edit Selected Students</h1>
+                        <button className='flex justify-end items-center'>
                             <a href='/addNew' className='p-3 bg-blue-500 hover:bg-blue-600 text-white text-sm sm:text-base rounded-md'>
                                 Add new student
                             </a>
@@ -100,7 +100,7 @@ const EditSelectedStudentPage = () => {
                     </div>
                     <div className='flex my-4 justify-between'>
                         <p className='text-red-500 text-sm' >Select atleast 3 students and max 4</p>
-                        <p className='font-bold'>Selected students - {alreadyAssignedStudents.length}</p>
+                        <p className='text-sm sm:text-base font-bold ml-4'>Selected students - {alreadyAssignedStudents.length}</p>
                     </div>
                     <Formik
                         initialValues={{ selectedStudents: alreadyAssignedStudents.map(student => student._id) }}
@@ -114,7 +114,7 @@ const EditSelectedStudentPage = () => {
                                             key={student._id}
                                             className={`flex items-center justify-between px-4 bg-gray-200 hover:bg-gray-300 rounded`}
                                         >
-                                            <div className='flex'>
+                                            <div className='flex items-center justify-center'>
                                                 <Field
                                                     type="checkbox"
                                                     name="selectedStudents"

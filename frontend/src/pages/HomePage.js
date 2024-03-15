@@ -62,7 +62,7 @@ const HomePage = () => {
                         <div>
                             <div className='flex items-center justify-between my-4'>
                                 <h1 className="text-xl md:text-3xl font-bold">Selected Students</h1>
-                                <button className='py-2 px-6 bg-blue-400 rounded font-bold' onClick={handleEditClick}>Edit</button>
+                                <button className='py-2 px-6 bg-blue-400 rounded font-bold text-sm md:text-base' onClick={handleEditClick}>Edit</button>
                             </div>
                             <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                                 {selectedStudents.map(student => (
@@ -88,7 +88,7 @@ const HomePage = () => {
                                             <option value="pending">Pending</option>
                                         </select>
                                     </div>
-                                    <button className='px-4 py-2 bg-green-400 rounded'> <DownloadXLSX data={students} /> </button>
+                                    <button className='py-2 px-4 bg-green-400 rounded'> <DownloadXLSX data={students} /> </button>
                                 </div>
                             </div>
                             <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
