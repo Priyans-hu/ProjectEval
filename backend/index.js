@@ -6,7 +6,6 @@ const app = express();
 require("dotenv").config();
 require("./config/dbConnection");
 
-const EvalRoute = require("./routes/EvalRoutes");
 const StudentRoute = require("./routes/StudentRoutes");
 const MentorRoute = require("./routes/MentorRoutes");
 
@@ -28,7 +27,6 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-app.use("/api/eval", EvalRoute);
 app.use("/api/student", StudentRoute);
 app.use("/api/mentor", MentorRoute);
 
