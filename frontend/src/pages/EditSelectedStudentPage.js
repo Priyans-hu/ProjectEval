@@ -3,13 +3,16 @@ import { useNavigate } from 'react-router-dom';
 import { Formik, Form, Field } from 'formik';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import LockIcon from '@mui/icons-material/Lock';
 import studentApi from '../api/StudentApi';
 import mentorApi from '../api/MentorApi';
 import StudentCard from '../components/StudentCard';
+import Loader from '../components/Loader';
 
 const EditSelectedStudentPage = () => {
     const navigate = useNavigate();
     const [students, setStudents] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [alreadyAssignedStudents, setAlreadyAssignedStudents] = useState([]);
     const mentorUserId = localStorage.getItem('mentorUserId');
     const [initiallyAssignedStudents, setInitiallyAssignedStudents] = useState([]);
@@ -21,9 +24,11 @@ const EditSelectedStudentPage = () => {
                 const assignedToCurrentMentor = response.data.filter(student => student.mentor === mentorUserId);
                 setAlreadyAssignedStudents(assignedToCurrentMentor);
                 setInitiallyAssignedStudents(assignedToCurrentMentor);
+                setLoading(false);
             })
             .catch(error => {
                 console.error('Error fetching students: ', error);
+                setLoading(false);
             });
     }, [mentorUserId]);
 
@@ -80,46 +85,64 @@ const EditSelectedStudentPage = () => {
     };
 
     return (
-        <div className="container mx-auto p-4">
-            <h1 className="text-xl md:text-3xl font-bold mt-4">Edit Selected Students</h1>
-            <p className='text-red-500 text-sm my-4' >Select atleast 3 students and max 4</p>
-            <Formik
-                initialValues={{ selectedStudents: alreadyAssignedStudents.map(student => student._id) }}
-                onSubmit={(values) => handleSubmit(values)}
-            >
-                {() => (
-                    <Form>
-                        <div className='grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8 text-sm md:text-base'>
-                            {students.map(student => (
-                                <div key={student._id} className="flex items-center px-4 bg-gray-200 hover:bg-gray-300 rounded">
-                                    <Field
-                                        type="checkbox"
-                                        name="selectedStudents"
-                                        value={student._id}
-                                        checked={alreadyAssignedStudents.some(s => s._id === student._id)}
-                                        onChange={() => handleCheckboxChange(student._id)}
-                                        className="mr-2 cursor-pointer"
-                                        disabled={student.mentor !== null && student.mentor !== mentorUserId}
-                                    />
-                                    <label htmlFor={student._id}>
-                                        <StudentCard user={student} controls={false} />
-                                    </label>
-                                </div>
-                            ))}
-                        </div>
-                        <div className='flex justify-end'>
-                            {alreadyAssignedStudents.length >= 3 && alreadyAssignedStudents.length <= 4 && (
-                                <button
-                                    type="submit"
-                                    className="py-2 px-4 bg-blue-500 text-white rounded-md w-1/4"
-                                >
-                                    Submit
-                                </button>
-                            )}
-                        </div>
-                    </Form>
-                )}
-            </Formik>
+        <div>
+            { loading ? (
+                <Loader />
+            ) : (
+            <div className="container mx-auto p-4">
+                <h1 className="text-xl md:text-3xl font-bold mt-4">Edit Selected Students</h1>
+                <div className='flex my-4 justify-between'>
+                    <p className='text-red-500 text-sm' >Select atleast 3 students and max 4</p>
+                    <p className='font-bold'>Selected students - {alreadyAssignedStudents.length}</p>
+                </div>
+                <Formik
+                    initialValues={{ selectedStudents: alreadyAssignedStudents.map(student => student._id) }}
+                    onSubmit={(values) => handleSubmit(values)}
+                >
+                    {() => (
+                        <Form>
+                            <div className='grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8 text-sm md:text-base'>
+                                {students.map(student => (
+                                    <div
+                                        key={student._id}
+                                        className={`flex items-center justify-between px-4 bg-gray-200 hover:bg-gray-300 rounded`}
+                                    >
+                                        <div className='flex'>
+                                            <Field
+                                                type="checkbox"
+                                                name="selectedStudents"
+                                                value={student._id}
+                                                checked={alreadyAssignedStudents.some(s => s._id === student._id)}
+                                                onChange={() => handleCheckboxChange(student._id)}
+                                                className="mr-2 cursor-pointer"
+                                                disabled={(student.mentor !== null && student.mentor !== mentorUserId) || student.isLocked}
+                                            />
+                                            <label htmlFor={student._id}>
+                                                <StudentCard user={student} controls={false} />
+                                            </label>
+                                        </div>
+                                        {student.isLocked && student.mentor === mentorUserId && (
+                                            <span className="text-red-600 ml-2">
+                                                <LockIcon />
+                                            </span>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                            <div className='flex justify-end'>
+                                {alreadyAssignedStudents.length >= 3 && alreadyAssignedStudents.length <= 4 && (
+                                    <button
+                                        type="submit"
+                                        className="py-2 px-4 bg-blue-500 text-white rounded-md w-1/4"
+                                    >
+                                        Submit
+                                    </button>
+                                )}
+                            </div>
+                        </Form>
+                    )}
+                </Formik>
+            </div>)}
         </div>
     );
 };

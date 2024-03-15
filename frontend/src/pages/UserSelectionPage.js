@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MentorApi from '../api/MentorApi';
+import Loader from '../components/Loader';
 
 const UserSelectionPage = () => {
     const [users, setUsers] = useState([]);
     const [selectedUser, setSelectedUser] = useState();
-    const [loading, setLoading] = useState(true); // Added loading state
+    const [loading, setLoading] = useState(true);
 
     const navigate = useNavigate();
 
@@ -13,11 +14,11 @@ const UserSelectionPage = () => {
         MentorApi.getAllMentors()
             .then(response => {
                 setUsers(response.data);
-                setLoading(false); // Set loading to false when data is fetched
+                setLoading(false);
             })
             .catch(error => {
                 console.error('Error fetching mentors: ', error);
-                setLoading(false); // Set loading to false in case of error
+                setLoading(false);
             });
     }, []);
 
@@ -37,18 +38,7 @@ const UserSelectionPage = () => {
             <div className="p-4 w-2/3 sm:w-1/2 lg:w-1/3">
                 <h2 className="text-lg font-bold mb-2">Working As</h2>
                 {loading ? (
-                    // <div className="flex items-center justify-center">
-                    //     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-                    //     <p className="ml-2">Loading...</p>
-                    // </div>
-                    <div className="flex items-center justify-center h-screen">
-                        <div className="flex flex-col items-center">
-                            <div className="w-16 h-16 border-t-4 border-blue-500 border-solid rounded-full animate-spin"></div>
-                            <h2 className="text-4xl font-bold text-blue-500 mt-4 animate-pulse">
-                                Loading...
-                            </h2>
-                        </div>
-                    </div>
+                    <Loader />
                 ) : (
                     <div>
                         <select
