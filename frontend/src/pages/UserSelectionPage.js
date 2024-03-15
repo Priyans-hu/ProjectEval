@@ -37,31 +37,41 @@ const UserSelectionPage = () => {
             <div className="p-4 w-2/3 sm:w-1/2 lg:w-1/3">
                 <h2 className="text-lg font-bold mb-2">Working As</h2>
                 {loading ? (
-                    <div className="flex items-center justify-center">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-                        <p className="ml-2">Loading...</p>
+                    // <div className="flex items-center justify-center">
+                    //     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+                    //     <p className="ml-2">Loading...</p>
+                    // </div>
+                    <div className="flex items-center justify-center h-screen">
+                        <div className="flex flex-col items-center">
+                            <div className="w-16 h-16 border-t-4 border-blue-500 border-solid rounded-full animate-spin"></div>
+                            <h2 className="text-4xl font-bold text-blue-500 mt-4 animate-pulse">
+                                Loading...
+                            </h2>
+                        </div>
                     </div>
                 ) : (
-                    <select
-                        className="w-full p-2 border border-gray-300 rounded"
-                        value={selectedUser}
-                        onChange={handleUserChange}
-                    >
-                        <option value="">Select Mentor...</option>
-                        {users.map(user => (
-                            <option key={user._id} value={user._id}>{user.name}</option>
-                        ))}
-                    </select>
+                    <div>
+                        <select
+                            className="w-full p-2 border border-gray-300 rounded"
+                            value={selectedUser}
+                            onChange={handleUserChange}
+                        >
+                            <option value="">Select Mentor...</option>
+                            {users.map(user => (
+                                <option key={user._id} value={user._id}>{user.name}</option>
+                            ))}
+                        </select>
+                        <div className='flex justify-end gap-2'>
+                            <button
+                                className="mt-4 bg-blue-500 text-white px-4 py-2 md:w-1/3 rounded"
+                                onClick={handleContinue}
+                                disabled={loading}
+                            >
+                                Continue
+                            </button>
+                        </div>
+                    </div>
                 )}
-                <div className='flex justify-end gap-2'>
-                    <button
-                        className="mt-4 bg-blue-500 text-white px-4 py-2 md:w-1/3 rounded"
-                        onClick={handleContinue}
-                        disabled={loading}
-                    >
-                        Continue
-                    </button>
-                </div>
             </div>
         </div>
     );

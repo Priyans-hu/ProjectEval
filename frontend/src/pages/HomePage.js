@@ -83,7 +83,7 @@ const HomePage = () => {
                             <button className='px-4 py-2 bg-green-400 rounded'> <DownloadXLSX data={students} /> </button>
                         </div>
                     </div>
-                    <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         {filteredStudents.map(student => (
                             <li key={student._id} className="bg-gray-200 rounded">
                                 <StudentCard user={student} />
