@@ -86,63 +86,70 @@ const EditSelectedStudentPage = () => {
 
     return (
         <div>
-            { loading ? (
+            {loading ? (
                 <Loader />
             ) : (
-            <div className="container mx-auto p-4">
-                <h1 className="text-xl md:text-3xl font-bold mt-4">Edit Selected Students</h1>
-                <div className='flex my-4 justify-between'>
-                    <p className='text-red-500 text-sm' >Select atleast 3 students and max 4</p>
-                    <p className='font-bold'>Selected students - {alreadyAssignedStudents.length}</p>
-                </div>
-                <Formik
-                    initialValues={{ selectedStudents: alreadyAssignedStudents.map(student => student._id) }}
-                    onSubmit={(values) => handleSubmit(values)}
-                >
-                    {() => (
-                        <Form>
-                            <div className='grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8 text-sm md:text-base'>
-                                {students.map(student => (
-                                    <div
-                                        key={student._id}
-                                        className={`flex items-center justify-between px-4 bg-gray-200 hover:bg-gray-300 rounded`}
-                                    >
-                                        <div className='flex'>
-                                            <Field
-                                                type="checkbox"
-                                                name="selectedStudents"
-                                                value={student._id}
-                                                checked={alreadyAssignedStudents.some(s => s._id === student._id)}
-                                                onChange={() => handleCheckboxChange(student._id)}
-                                                className="mr-2 cursor-pointer"
-                                                disabled={(student.mentor !== null && student.mentor !== mentorUserId) || student.isLocked}
-                                            />
-                                            <label htmlFor={student._id}>
-                                                <StudentCard user={student} controls={false} />
-                                            </label>
+                <div className="container mx-auto p-4">
+                    <div className='flex justify-between'>
+                        <h1 className="text-xl md:text-3xl font-bold mt-4">Edit Selected Students</h1>
+                        <button>
+                            <a href='/addNew' className='p-3 bg-blue-500 hover:bg-blue-600 text-white text-sm sm:text-base rounded-md'>
+                                Add new student
+                            </a>
+                        </button>
+                    </div>
+                    <div className='flex my-4 justify-between'>
+                        <p className='text-red-500 text-sm' >Select atleast 3 students and max 4</p>
+                        <p className='font-bold'>Selected students - {alreadyAssignedStudents.length}</p>
+                    </div>
+                    <Formik
+                        initialValues={{ selectedStudents: alreadyAssignedStudents.map(student => student._id) }}
+                        onSubmit={(values) => handleSubmit(values)}
+                    >
+                        {() => (
+                            <Form>
+                                <div className='grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8 text-sm md:text-base'>
+                                    {students.map(student => (
+                                        <div
+                                            key={student._id}
+                                            className={`flex items-center justify-between px-4 bg-gray-200 hover:bg-gray-300 rounded`}
+                                        >
+                                            <div className='flex'>
+                                                <Field
+                                                    type="checkbox"
+                                                    name="selectedStudents"
+                                                    value={student._id}
+                                                    checked={alreadyAssignedStudents.some(s => s._id === student._id)}
+                                                    onChange={() => handleCheckboxChange(student._id)}
+                                                    className="mr-2 cursor-pointer"
+                                                    disabled={(student.mentor !== null && student.mentor !== mentorUserId) || student.isLocked}
+                                                />
+                                                <label htmlFor={student._id}>
+                                                    <StudentCard user={student} controls={false} />
+                                                </label>
+                                            </div>
+                                            {student.isLocked && student.mentor === mentorUserId && (
+                                                <span className="text-red-600 ml-2">
+                                                    <LockIcon />
+                                                </span>
+                                            )}
                                         </div>
-                                        {student.isLocked && student.mentor === mentorUserId && (
-                                            <span className="text-red-600 ml-2">
-                                                <LockIcon />
-                                            </span>
-                                        )}
-                                    </div>
-                                ))}
-                            </div>
-                            <div className='flex justify-end'>
-                                {alreadyAssignedStudents.length >= 3 && alreadyAssignedStudents.length <= 4 && (
-                                    <button
-                                        type="submit"
-                                        className="py-2 px-4 bg-blue-500 text-white rounded-md w-1/4"
-                                    >
-                                        Submit
-                                    </button>
-                                )}
-                            </div>
-                        </Form>
-                    )}
-                </Formik>
-            </div>)}
+                                    ))}
+                                </div>
+                                <div className='flex justify-end'>
+                                    {alreadyAssignedStudents.length >= 3 && alreadyAssignedStudents.length <= 4 && (
+                                        <button
+                                            type="submit"
+                                            className="py-2 px-4 bg-blue-500 hover:bg-blue-600 text-white rounded-md w-1/4"
+                                        >
+                                            Submit
+                                        </button>
+                                    )}
+                                </div>
+                            </Form>
+                        )}
+                    </Formik>
+                </div>)}
         </div>
     );
 };

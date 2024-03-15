@@ -9,6 +9,7 @@ import './App.css';
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import EditSelectedStudentPage from "./pages/EditSelectedStudentPage";
+import AddNewStudentPage from "./pages/AddNewStudentPage";
 
 function App() {
 	return (
@@ -20,6 +21,7 @@ function App() {
 						<Route path="/" element={<UserSelectionPage />} />
 						<Route path="/home" element={<HomePage />} />
 						<Route path="/edit" element={<EditSelectedStudentPage />} />
+						<Route path="/addNew" element={<AddNewStudentPage />} />
 						<Route path="/assign/:userId" element={<AssignMarks />} />
 					</Routes>
 				</div>
