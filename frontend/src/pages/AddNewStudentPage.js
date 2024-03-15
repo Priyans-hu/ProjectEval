@@ -23,7 +23,7 @@ const AddNewStudentPage = () => {
     const handleSubmit = async (values) => {
         try {
             await studentApi.createStudent(values);
-            navigate('/');
+            navigate('/edit');
             toast.success('Student added successfully');
         } catch (error) {
             toast.error('Error adding student');
