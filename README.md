@@ -10,10 +10,7 @@ ProjectEval is a web application designed to streamline the evaluation process f
 - **Submission Lock**: After submitting marks, they are locked and cannot be edited. If some students have unassigned marks, mentors cannot submit until all marks are assigned.
 - **Viewing and Filtering**: Mentors can view all students and their assigned marks, with filters for viewing students with unassigned marks and viewing students with assigned marks.
 - **Email Notifications**: Automatically send email notifications to assigned students once the mentor submits the evaluation, notifying them that the evaluation has been completed.
-
-## Upcoming Features 🌟
-
-- **Marksheet Generation**: Generate a mark sheet for each mentor in PDF or document format, providing a summary of all students' marks.
+- **Marksheet Generation**: Download a mark sheet for each student in document(xlsx) format, providing a summary of all students' marks.
 
 ## Technologies Used 💻
 
