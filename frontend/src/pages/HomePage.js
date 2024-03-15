@@ -48,7 +48,7 @@ const HomePage = () => {
     return (
         <div className="container mx-auto p-4">
             <div className='flex font-bold justify-end'>
-                <p>Current Session - {mentorName}</p>
+                <p>Current Mentor - {mentorName}</p>
             </div>
             <div className='my-4'>
                 <div>

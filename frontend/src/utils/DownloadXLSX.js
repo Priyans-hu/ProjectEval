@@ -29,7 +29,7 @@ const DownloadXLSX = ({ data }) => {
     };
 
     return (
-        <button onClick={downloadData}>Download XLSX</button>
+        <button onClick={downloadData} title='Download as excel' className='text-sm md:text-base'>Download</button>
     );
 };
 

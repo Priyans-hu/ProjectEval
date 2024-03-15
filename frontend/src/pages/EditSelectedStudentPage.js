@@ -16,15 +16,15 @@ const EditSelectedStudentPage = () => {
 
     useEffect(() => {
         studentApi.getAllStudents()
-        .then(response => {
-            setStudents(response.data);
-            const assignedToCurrentMentor = response.data.filter(student => student.mentor === mentorUserId);
-            setAlreadyAssignedStudents(assignedToCurrentMentor);
-            setInitiallyAssignedStudents(assignedToCurrentMentor);
-        })
-        .catch(error => {
-            console.error('Error fetching students: ', error);
-        });
+            .then(response => {
+                setStudents(response.data);
+                const assignedToCurrentMentor = response.data.filter(student => student.mentor === mentorUserId);
+                setAlreadyAssignedStudents(assignedToCurrentMentor);
+                setInitiallyAssignedStudents(assignedToCurrentMentor);
+            })
+            .catch(error => {
+                console.error('Error fetching students: ', error);
+            });
     }, [mentorUserId]);
 
     const handleCheckboxChange = (studentId) => {
@@ -48,19 +48,25 @@ const EditSelectedStudentPage = () => {
             const selectedStudents = alreadyAssignedStudents.map(student => student._id);
 
             await mentorApi.updateMentor(mentorUserId, { studentsEvaluated: selectedStudents });
-    
+
             // Using Promise.all to wait for all removals to complete
             const removalPromises = initiallyAssignedStudents.map(async student => {
+                if (student.isLocked) {
+                    return;
+                }
                 await studentApi.removeMentor(student._id);
             });
             await Promise.all(removalPromises);
-    
+
             // Using Promise.all to wait for all updates to complete
-            const updatePromises = selectedStudents.map(async studentId => {
-                await studentApi.updateStudent(studentId, { mentor: mentorUserId });
+            const updatePromises = alreadyAssignedStudents.map(async student => {
+                if (student.isLocked) {
+                    return;
+                }
+                await studentApi.updateStudent(student._id, { mentor: mentorUserId });
             });
             await Promise.all(updatePromises);
-    
+
             toast.success('Students assigned successfully');
             navigate('/home');
         } catch (error) {
@@ -101,14 +107,16 @@ const EditSelectedStudentPage = () => {
                                 </div>
                             ))}
                         </div>
-                        {alreadyAssignedStudents.length >= 3 && alreadyAssignedStudents.length <= 4 && (
-                            <button
-                                type="submit"
-                                className="py-2 px-4 bg-blue-500 text-white rounded-md float-right w-1/4"
-                            >
-                                Submit
-                            </button>
-                        )}
+                        <div className='flex justify-end'>
+                            {alreadyAssignedStudents.length >= 3 && alreadyAssignedStudents.length <= 4 && (
+                                <button
+                                    type="submit"
+                                    className="py-2 px-4 bg-blue-500 text-white rounded-md w-1/4"
+                                >
+                                    Submit
+                                </button>
+                            )}
+                        </div>
                     </Form>
                 )}
             </Formik>
