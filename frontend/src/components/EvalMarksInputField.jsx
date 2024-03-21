@@ -1,13 +1,14 @@
 import React from 'react';
 import { Field, ErrorMessage } from 'formik';
 
-const EvalMarksInputField = ({ label, name, isEditable }) => {
+const EvalMarksInputField = ({ label, name, isEditable, value }) => {
     return (
     <div className='flex flex-col'>
         <label htmlFor={name} className='text-lg font-semibold'>{label}</label>
         <Field
             type='number'
             id={name}
+            value={value}
             name={name}
             disabled={isEditable}
             readOnly={isEditable}

@@ -5,7 +5,8 @@ const sendEvaluationEmail = require('../utils/SendEvaluationMail');
 const getAllStudents = async (req, res) => {
     try {
         const students = await Student.find();
-        res.json(students);
+        let filteredStudents = students.filter(student => !student.isLocked);
+        res.json(filteredStudents);
     } catch (err) {
         res.status(500).json({ message: err.message });
     }

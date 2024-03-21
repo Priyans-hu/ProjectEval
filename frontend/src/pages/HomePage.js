@@ -42,6 +42,7 @@ const HomePage = () => {
         if (filter === 'all') return true;
         if (filter === 'assigned') return student.evaluation.ideation !== null || student.evaluation.execution !== null || student.evaluation.vivaPitch !== null;
         if (filter === 'pending') return student.evaluation.ideation === null && student.evaluation.execution === null && student.evaluation.vivaPitch === null;
+        if (filter === 'locked') return student.isLocked;
         return false;
     });
 
@@ -86,6 +87,7 @@ const HomePage = () => {
                                             <option value="all">All</option>
                                             <option value="assigned">Assigned</option>
                                             <option value="pending">Pending</option>
+                                            <option value="locked">Locked</option>
                                         </select>
                                     </div>
                                     <button className='py-2 px-4 bg-green-400 rounded'> <DownloadXLSX data={students} /> </button>
